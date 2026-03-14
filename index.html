@@ -13,41 +13,35 @@
   <link rel="stylesheet" href="style.css">
   <style>
     body { box-sizing: border-box; }
-    /* ニックネーム固定幅 */
     #nicknameDisplay {
-      display: inline-block;
-      min-width: 120px;
-      max-width: 120px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      vertical-align: middle;
+      display: inline-block; min-width: 120px; max-width: 120px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;
     }
+    #charSelectGrid { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; padding:10px; }
+    #charSelectGrid > div:hover { transform: scale(1.08); }
   </style>
 </head>
 
 <body class="h-full">
   <div id="game-container" style="position:relative;width:100%;height:100%;overflow:hidden">
     <canvas id="gameCanvas"></canvas>
-
     <div id="ui-overlay">
       <!-- HUD 左上 -->
       <div class="hud-top-left" id="inGameHUD" style="display:none">
         <div class="hud-stat score" id="scoreDisplay">0</div>
-        <div class="hud-stat coins" id="coinDisplay">🪙 0</div>
+        <div class="hud-stat coins"  id="coinDisplay">🪙 0</div>
         <div class="hud-stat medals" id="medalDisplay">🔘 0</div>
         <div class="hud-stat pieces" id="piecesDisplay">🧩 0</div>
-        <div class="hud-stat combo" id="comboDisplay" style="display:none"></div>
+        <div class="hud-stat combo"  id="comboDisplay" style="display:none"></div>
       </div>
-
       <div id="activeEffects"
-           style="position:absolute;top:280px;left:12px;
-                  display:flex;flex-direction:column;gap:6px;
-                  z-index:20;pointer-events:none"></div>
-
+           style="position:absolute;top:280px;left:12px;display:flex;
+                  flex-direction:column;gap:6px;z-index:20;pointer-events:none"></div>
       <!-- HUD 右上 -->
       <div class="hud-top-right" id="inGameHUDRight" style="display:none">
-        <div id="playerStatsPanel" style="background:rgba(0,20,60,.7);border:2px solid #0ff;border-radius:4px;padding:8px;margin-bottom:8px;font-size:11px;color:#0ff;text-shadow:0 0 6px #0ff">
+        <div id="playerStatsPanel"
+             style="background:rgba(0,20,60,.7);border:2px solid #0ff;border-radius:4px;
+                    padding:8px;margin-bottom:8px;font-size:11px;color:#0ff;text-shadow:0 0 6px #0ff">
           <div style="margin-bottom:4px" id="nicknameDisplay">PLAYER</div>
           <div class="player-level-bar">
             <div class="player-level-text" id="playerLevelText">LV 1</div>
@@ -61,58 +55,48 @@
           <div style="font-size:10px;color:#ffd700">🪙 <span id="playerCoinDisplay">0</span></div>
           <div style="font-size:10px;color:#c0c0c0">🔘 <span id="playerMedalDisplay">0</span></div>
         </div>
-
         <div style="color:#0ff;font-size:14px;text-shadow:0 0 6px #0ff">
           WAVE <span id="waveDisplay" style="font-size:18px;font-weight:900">1</span>
         </div>
-        <div class="hp-bar-outer">
-          <div class="hp-bar-inner" id="hpBar" style="width:100%"></div>
-        </div>
+        <div class="hp-bar-outer"><div class="hp-bar-inner" id="hpBar" style="width:100%"></div></div>
         <div class="hud-stat" id="hpText" style="font-size:13px;margin-top:3px">HP 100</div>
         <div class="exp-label" id="levelDisplay">Move 1</div>
         <div class="exp-sub">Orb 0.00/30</div>
-        <div class="exp-bar-outer">
-          <div class="exp-bar-inner" id="expBar" style="width:0%"></div>
-        </div>
+        <div class="exp-bar-outer"><div class="exp-bar-inner" id="expBar" style="width:0%"></div></div>
         <div class="lives-text" id="livesDisplay">❤️ 50/50</div>
-        <div class="lives-bar-outer">
-          <div class="lives-bar-inner" id="livesBar" style="width:100%"></div>
-        </div>
+        <div class="lives-bar-outer"><div class="lives-bar-inner" id="livesBar" style="width:100%"></div></div>
       </div>
-
       <!-- ボスHPバー -->
-      <div class="boss-hp-container" id="bossHpContainer"
+      <div id="bossHpContainer"
            style="position:absolute;bottom:70px;left:50%;transform:translateX(-50%);
-                  width:50%;max-width:350px;display:none;flex-direction:column;
-                  align-items:center;gap:3px">
-        <div style="color:#f44;font-size:14px;font-weight:700;text-shadow:0 0 8px #f44;
-                    letter-spacing:2px" id="bossName">⚠ BOSS ⚠</div>
-        <div style="width:100%;height:10px;background:rgba(255,0,0,.15);border:1.5px solid #f44;
-                    border-radius:3px;overflow:hidden">
-          <div class="boss-hp-inner" id="bossHpBar"
-               style="width:100%;height:100%;background:linear-gradient(90deg,#f00,#ff4400,#ff0);
-                      border-radius:2px;transition:width .15s"></div>
+                  width:50%;max-width:350px;display:none;flex-direction:column;align-items:center;gap:3px">
+        <div style="color:#f44;font-size:14px;font-weight:700;text-shadow:0 0 8px #f44;letter-spacing:2px"
+             id="bossName">⚠ BOSS ⚠</div>
+        <div style="width:100%;height:10px;background:rgba(255,0,0,.15);border:1.5px solid #f44;border-radius:3px;overflow:hidden">
+          <div id="bossHpBar" style="width:100%;height:100%;background:linear-gradient(90deg,#f00,#ff4400,#ff0);border-radius:2px;transition:width .15s"></div>
         </div>
       </div>
-
       <!-- チュートリアルTIP -->
       <div id="tutorialTipBox"
            style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
                   background:rgba(0,100,200,.9);border:3px solid #0ff;border-radius:8px;
-                  padding:20px;text-align:center;display:none;z-index:35;
-                  pointer-events:none;max-width:400px">
+                  padding:20px;text-align:center;display:none;z-index:35;pointer-events:none;max-width:400px">
         <h4 style="color:#0ff;font-size:18px;text-shadow:0 0 8px #0ff;margin-bottom:10px" id="tipTitle">TIP</h4>
         <p style="color:#fff;font-size:13px;line-height:1.6" id="tipText"></p>
       </div>
-
       <div class="item-slots" id="itemSlots" style="display:none"></div>
+      <!-- スキルバー（E/R）＋キャラ表示 -->
       <div class="skill-bar" id="skillBar" style="display:none">
-        <button class="skill-btn" id="skillHomingBtn" onclick="useSkill('homing')" title="100 ピース">C<br>HOMING</button>
-        <button class="skill-btn" id="skillWaveBtn"   onclick="useSkill('wave')"   title="500 ピース">V<br>WAVE</button>
-        <button class="skill-btn" id="skillDropBtn"   onclick="useSkill('dropup')" title="1000 ピース">B<br>DROP</button>
-        <button class="skill-btn" id="skillBombBtn"   onclick="useSkill('megabomb')" title="5000 ピース">N<br>BOMB</button>
+        <div id="skillCharInfo"
+             style="text-align:center;margin-bottom:6px;
+                    background:rgba(0,15,40,.8);border:1px solid rgba(0,255,255,.3);
+                    border-radius:6px;padding:4px 8px;color:#0ff">
+          <div style="color:#aaa;font-size:9px">キャラクター：ボイド</div>
+          <div style="font-size:20px">⚫</div>
+        </div>
+        <button class="skill-btn" id="skillEBtn" onclick="useCharSkill('e')">E<br>SKILL</button>
+        <button class="skill-btn" id="skillRBtn" onclick="useCharSkill('r')">R<br>SKILL</button>
       </div>
-
       <div class="skill-active-indicator" id="skillIndicator"></div>
       <div class="wave-announce"  id="waveAnnounce"></div>
       <div class="level-up-flash" id="levelUpFlash"></div>
@@ -124,167 +108,82 @@
     </div>
 
     <!-- ログイン/アカウントボタン -->
-    <div style="position:absolute;top:20px;left:50%;transform:translateX(-50%);
-                display:flex;gap:8px;z-index:70;pointer-events:auto">
+    <div style="position:absolute;top:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:70;pointer-events:auto">
       <button id="authLoginBtn" class="home-btn" onclick="openAuthOverlay('login')"
-              style="padding:8px 16px;font-size:12px;border-color:#0f0;color:#0f0">
-        🔑 ログイン / 登録
-      </button>
-      <div id="authUserInfo"
-           style="display:none;text-align:center;background:rgba(0,20,60,.8);
-                  border:2px solid #0ff;border-radius:4px;padding:6px 12px"></div>
+              style="padding:8px 16px;font-size:12px;border-color:#0f0;color:#0f0">🔑 ログイン / 登録</button>
+      <div id="authUserInfo" style="display:none;text-align:center;background:rgba(0,20,60,.8);border:2px solid #0ff;border-radius:4px;padding:6px 12px"></div>
       <button id="authLogoutBtn" class="home-btn" onclick="logout()"
-              style="display:none;padding:8px 16px;font-size:12px;border-color:#f44;color:#f44">
-        🚪 ログアウト
-      </button>
+              style="display:none;padding:8px 16px;font-size:12px;border-color:#f44;color:#f44">🚪 ログアウト</button>
     </div>
 
     <!-- アカウントオーバーレイ -->
-    <div id="authOverlay"
-         style="position:absolute;top:0;left:0;width:100%;height:100%;
-                background:rgba(0,0,0,.85);z-index:200;
-                display:none;align-items:center;justify-content:center">
-      <div style="background:rgba(0,20,80,.98);border:3px solid #0ff;
-                  border-radius:10px;padding:35px;max-width:420px;width:90%;
-                  max-height:90vh;overflow-y:auto">
-        <!-- タブ -->
-        <div style="display:flex;margin-bottom:25px;border:2px solid #0ff;
-                    border-radius:4px;overflow:hidden">
-          <button id="tabLogin" onclick="switchAuthTab('login')"
-                  style="flex:1;padding:10px;background:rgba(0,255,255,.2);
-                         color:#0ff;border:none;cursor:pointer;
-                         font-family:Orbitron;font-size:11px;font-weight:700">ログイン</button>
-          <button id="tabRegister" onclick="switchAuthTab('register')"
-                  style="flex:1;padding:10px;background:transparent;color:#666;
-                         border:none;cursor:pointer;
-                         font-family:Orbitron;font-size:11px;font-weight:700">新規登録</button>
+    <div id="authOverlay" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:center;justify-content:center">
+      <div style="background:rgba(0,20,80,.98);border:3px solid #0ff;border-radius:10px;padding:35px;max-width:420px;width:90%;max-height:90vh;overflow-y:auto">
+        <div style="display:flex;margin-bottom:25px;border:2px solid #0ff;border-radius:4px;overflow:hidden">
+          <button id="tabLogin" onclick="switchAuthTab('login')" style="flex:1;padding:10px;background:rgba(0,255,255,.2);color:#0ff;border:none;cursor:pointer;font-family:Orbitron;font-size:11px;font-weight:700">ログイン</button>
+          <button id="tabRegister" onclick="switchAuthTab('register')" style="flex:1;padding:10px;background:transparent;color:#666;border:none;cursor:pointer;font-family:Orbitron;font-size:11px;font-weight:700">新規登録</button>
         </div>
-        <div id="authMessage"
-             style="display:none;padding:8px;border-radius:4px;margin-bottom:15px;
-                    font-size:11px;text-align:center;background:rgba(255,0,0,.1);
-                    border:1px solid #f44"></div>
-
-        <!-- ログインフォーム -->
+        <div id="authMessage" style="display:none;padding:8px;border-radius:4px;margin-bottom:15px;font-size:11px;text-align:center;background:rgba(255,0,0,.1);border:1px solid #f44"></div>
         <div id="loginForm">
-          <h3 style="color:#0ff;font-size:18px;margin-bottom:20px;text-align:center;
-                     text-shadow:0 0 10px #0ff">🔑 ログイン</h3>
+          <h3 style="color:#0ff;font-size:18px;margin-bottom:20px;text-align:center;text-shadow:0 0 10px #0ff">🔑 ログイン</h3>
           <div style="margin-bottom:14px">
             <div style="color:#0ff;font-size:10px;margin-bottom:5px">アカウントID</div>
-            <input type="text" id="loginAccountId" placeholder="アカウントID"
-                   style="width:100%;padding:10px;background:rgba(0,50,100,.8);
-                          border:2px solid #0ff;color:#0ff;border-radius:4px;
-                          font-family:Orbitron;font-size:12px">
+            <input type="text" id="loginAccountId" placeholder="アカウントID" style="width:100%;padding:10px;background:rgba(0,50,100,.8);border:2px solid #0ff;color:#0ff;border-radius:4px;font-family:Orbitron;font-size:12px">
           </div>
           <div style="margin-bottom:20px">
             <div style="color:#0ff;font-size:10px;margin-bottom:5px">パスワード</div>
-            <input type="password" id="loginPassword" placeholder="パスワード"
-                   style="width:100%;padding:10px;background:rgba(0,50,100,.8);
-                          border:2px solid #0ff;color:#0ff;border-radius:4px;
-                          font-family:Orbitron;font-size:12px">
+            <input type="password" id="loginPassword" placeholder="パスワード" style="width:100%;padding:10px;background:rgba(0,50,100,.8);border:2px solid #0ff;color:#0ff;border-radius:4px;font-family:Orbitron;font-size:12px">
           </div>
           <button onclick="handleLogin()" class="btn" style="width:100%;margin-bottom:12px">ログイン</button>
           <div style="text-align:center;color:#aaa;font-size:11px;margin:12px 0">── または ──</div>
-          <button onclick="handleGoogleLogin()"
-                  style="width:100%;padding:12px;background:#fff;color:#333;border:none;
-                         border-radius:4px;cursor:pointer;font-family:Orbitron;font-size:12px;
-                         font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                 style="width:18px;height:18px">Googleでログイン
+          <button onclick="handleGoogleLogin()" style="width:100%;padding:12px;background:#fff;color:#333;border:none;border-radius:4px;cursor:pointer;font-family:Orbitron;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:18px;height:18px">Googleでログイン
           </button>
         </div>
-
-        <!-- 新規登録フォーム -->
         <div id="registerForm" style="display:none">
-          <h3 style="color:#0ff;font-size:18px;margin-bottom:20px;text-align:center;
-                     text-shadow:0 0 10px #0ff">📝 新規登録</h3>
+          <h3 style="color:#0ff;font-size:18px;margin-bottom:20px;text-align:center;text-shadow:0 0 10px #0ff">📝 新規登録</h3>
           <div style="margin-bottom:14px">
-            <div style="color:#0ff;font-size:10px;margin-bottom:5px">
-              アカウントID <span style="color:#aaa">（英数字・記号 4文字以上・変更不可）</span>
-            </div>
-            <input type="text" id="regAccountId" placeholder="例: player_01" maxlength="20"
-                   style="width:100%;padding:10px;background:rgba(0,50,100,.8);
-                          border:2px solid #0ff;color:#0ff;border-radius:4px;
-                          font-family:Orbitron;font-size:12px"
-                   oninput="checkAccountIdAvailability(this.value)">
+            <div style="color:#0ff;font-size:10px;margin-bottom:5px">アカウントID <span style="color:#aaa">（英数字・記号 4文字以上・変更不可）</span></div>
+            <input type="text" id="regAccountId" placeholder="例: player_01" maxlength="20" style="width:100%;padding:10px;background:rgba(0,50,100,.8);border:2px solid #0ff;color:#0ff;border-radius:4px;font-family:Orbitron;font-size:12px" oninput="checkAccountIdAvailability(this.value)">
             <div id="accountIdStatus" style="font-size:10px;margin-top:4px;height:14px"></div>
           </div>
           <div style="margin-bottom:14px">
-            <div style="color:#0ff;font-size:10px;margin-bottom:5px">
-              アカウント名 <span style="color:#aaa">（表示名・後から変更可）</span>
-            </div>
-            <input type="text" id="regDisplayName" placeholder="例: ボイドランナー太郎" maxlength="20"
-                   style="width:100%;padding:10px;background:rgba(0,50,100,.8);
-                          border:2px solid #0ff;color:#0ff;border-radius:4px;
-                          font-family:Orbitron;font-size:12px">
+            <div style="color:#0ff;font-size:10px;margin-bottom:5px">アカウント名 <span style="color:#aaa">（後から変更可）</span></div>
+            <input type="text" id="regDisplayName" placeholder="例: ボイドランナー太郎" maxlength="20" style="width:100%;padding:10px;background:rgba(0,50,100,.8);border:2px solid #0ff;color:#0ff;border-radius:4px;font-family:Orbitron;font-size:12px">
           </div>
           <div style="margin-bottom:14px">
-            <div style="color:#0ff;font-size:10px;margin-bottom:5px">
-              パスワード <span style="color:#aaa">（英数字含む8文字以上）</span>
-            </div>
-            <input type="password" id="regPassword" placeholder="パスワード"
-                   style="width:100%;padding:10px;background:rgba(0,50,100,.8);
-                          border:2px solid #0ff;color:#0ff;border-radius:4px;
-                          font-family:Orbitron;font-size:12px">
+            <div style="color:#0ff;font-size:10px;margin-bottom:5px">パスワード <span style="color:#aaa">（英数字含む8文字以上）</span></div>
+            <input type="password" id="regPassword" placeholder="パスワード" style="width:100%;padding:10px;background:rgba(0,50,100,.8);border:2px solid #0ff;color:#0ff;border-radius:4px;font-family:Orbitron;font-size:12px">
           </div>
           <div style="margin-bottom:20px">
-            <div style="color:#0ff;font-size:10px;margin-bottom:5px">
-              メールアドレス <span style="color:#aaa">（任意・後から追加可）</span>
-            </div>
-            <input type="email" id="regEmail" placeholder="任意"
-                   style="width:100%;padding:10px;background:rgba(0,50,100,.8);
-                          border:2px solid rgba(0,255,255,.4);color:#0ff;
-                          border-radius:4px;font-family:Orbitron;font-size:12px">
+            <div style="color:#0ff;font-size:10px;margin-bottom:5px">メールアドレス <span style="color:#aaa">（任意）</span></div>
+            <input type="email" id="regEmail" placeholder="任意" style="width:100%;padding:10px;background:rgba(0,50,100,.8);border:2px solid rgba(0,255,255,.4);color:#0ff;border-radius:4px;font-family:Orbitron;font-size:12px">
           </div>
           <button onclick="handleRegister()" class="btn" style="width:100%;margin-bottom:12px">アカウント作成</button>
           <div style="text-align:center;color:#aaa;font-size:11px;margin:12px 0">── または ──</div>
-          <button onclick="handleGoogleLogin()"
-                  style="width:100%;padding:12px;background:#fff;color:#333;border:none;
-                         border-radius:4px;cursor:pointer;font-family:Orbitron;font-size:12px;
-                         font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                 style="width:18px;height:18px">Googleで登録
+          <button onclick="handleGoogleLogin()" style="width:100%;padding:12px;background:#fff;color:#333;border:none;border-radius:4px;cursor:pointer;font-family:Orbitron;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:18px;height:18px">Googleで登録
           </button>
         </div>
-
-        <!-- Google新規ユーザー：ID設定フォーム -->
         <div id="googleSetupForm" style="display:none">
-          <h3 style="color:#0f0;font-size:16px;margin-bottom:15px;text-align:center;
-                     text-shadow:0 0 10px #0f0">
-            🎉 Googleログイン成功！<br>
-            <span style="font-size:12px;color:#aaa">アカウントIDを設定してください</span>
-          </h3>
+          <h3 style="color:#0f0;font-size:16px;margin-bottom:15px;text-align:center;text-shadow:0 0 10px #0f0">🎉 Googleログイン成功！<br><span style="font-size:12px;color:#aaa">アカウントIDを設定してください</span></h3>
           <div style="margin-bottom:14px">
-            <div style="color:#0ff;font-size:10px;margin-bottom:5px">
-              アカウントID <span style="color:#aaa">（英数字・記号 4文字以上）</span>
-            </div>
-            <input type="text" id="googleSetupId" placeholder="例: player_01" maxlength="20"
-                   style="width:100%;padding:10px;background:rgba(0,50,100,.8);
-                          border:2px solid #0ff;color:#0ff;border-radius:4px;
-                          font-family:Orbitron;font-size:12px"
-                   oninput="checkAccountIdAvailability(this.value,'googleSetupIdStatus')">
+            <div style="color:#0ff;font-size:10px;margin-bottom:5px">アカウントID <span style="color:#aaa">（英数字・記号 4文字以上）</span></div>
+            <input type="text" id="googleSetupId" placeholder="例: player_01" maxlength="20" style="width:100%;padding:10px;background:rgba(0,50,100,.8);border:2px solid #0ff;color:#0ff;border-radius:4px;font-family:Orbitron;font-size:12px" oninput="checkAccountIdAvailability(this.value,'googleSetupIdStatus')">
             <div id="googleSetupIdStatus" style="font-size:10px;margin-top:4px;height:14px"></div>
           </div>
           <div style="margin-bottom:20px">
             <div style="color:#0ff;font-size:10px;margin-bottom:5px">アカウント名</div>
-            <input type="text" id="googleSetupName" placeholder="表示名" maxlength="20"
-                   style="width:100%;padding:10px;background:rgba(0,50,100,.8);
-                          border:2px solid #0ff;color:#0ff;border-radius:4px;
-                          font-family:Orbitron;font-size:12px">
+            <input type="text" id="googleSetupName" placeholder="表示名" maxlength="20" style="width:100%;padding:10px;background:rgba(0,50,100,.8);border:2px solid #0ff;color:#0ff;border-radius:4px;font-family:Orbitron;font-size:12px">
           </div>
           <button onclick="handleGoogleSetup()" class="btn" style="width:100%">登録完了</button>
         </div>
-
-        <button onclick="closeAuthOverlay()"
-                style="width:100%;margin-top:15px;padding:8px;background:transparent;
-                       border:1px solid #555;color:#888;border-radius:4px;cursor:pointer;
-                       font-family:Orbitron;font-size:10px">CLOSE</button>
+        <button onclick="closeAuthOverlay()" style="width:100%;margin-top:15px;padding:8px;background:transparent;border:1px solid #555;color:#888;border-radius:4px;cursor:pointer;font-family:Orbitron;font-size:10px">CLOSE</button>
       </div>
     </div>
 
     <!-- ホーム画面 -->
     <div id="homeScreen" class="home-screen">
-
-      <!-- 左上ボタン群 -->
       <div style="position:absolute;top:20px;left:20px;pointer-events:auto;display:flex;gap:8px;flex-wrap:wrap">
         <button class="home-btn" onclick="showRanking()" style="padding:8px 16px;font-size:12px">🏆 ランキング</button>
         <button class="home-btn" onclick="showDailyMission()" id="dailyMissionBtn"
@@ -293,90 +192,72 @@
           <div id="dailyStars" style="font-size:10px;letter-spacing:2px">☆☆☆</div>
         </button>
       </div>
-
       <!-- 右上プレイヤー情報 -->
-      <div style="position:absolute;top:20px;right:20px;background:rgba(0,20,60,.8);
-                  border:2px solid #0ff;border-radius:4px;padding:15px;font-size:12px;
-                  color:#0ff;text-shadow:0 0 6px #0ff;text-align:right;min-width:200px">
+      <div style="position:absolute;top:20px;right:20px;background:rgba(0,20,60,.8);border:2px solid #0ff;border-radius:4px;padding:15px;font-size:12px;color:#0ff;text-shadow:0 0 6px #0ff;text-align:right;min-width:200px">
         <div style="margin-bottom:8px">
           <div style="font-size:10px;color:rgba(0,255,255,.6);margin-bottom:3px">NICKNAME</div>
           <input type="text" id="nicknameInput" placeholder="プレイヤー名" maxlength="20"
-                 style="padding:6px;background:rgba(0,50,100,.8);border:1px solid #0ff;
-                        color:#0ff;font-family:Orbitron;width:100%;font-size:11px;
-                        border-radius:2px" onchange="savePlayerData()">
+                 style="padding:6px;background:rgba(0,50,100,.8);border:1px solid #0ff;color:#0ff;font-family:Orbitron;width:100%;font-size:11px;border-radius:2px" onchange="savePlayerData()">
         </div>
         <div class="player-level-bar" style="margin-bottom:8px">
           <div class="player-level-text" id="homeLevelText">LV 1</div>
-          <div class="player-exp-bar-outer">
-            <div class="player-exp-bar-inner" id="homeExpBar" style="width:0%"></div>
-          </div>
+          <div class="player-exp-bar-outer"><div class="player-exp-bar-inner" id="homeExpBar" style="width:0%"></div></div>
         </div>
         <div style="font-size:13px;font-weight:900;margin-bottom:4px">🏆 HS: <span id="homeHighScore">0</span></div>
         <div style="font-size:12px;color:#ffd700;margin-bottom:4px">🪙 <span id="homeCoinCount">0</span></div>
         <div style="font-size:12px;color:#c0c0c0;margin-bottom:4px">🔘 <span id="homeMedalCount">0</span></div>
-        <div style="font-size:12px;color:#ff0">💵 <span id="homeVoidolCount">0</span> </div>
+        <div style="font-size:12px;color:#ff0">💵 <span id="homeVoidolCount">0</span></div>
       </div>
-
       <!-- お知らせ（左中央） -->
-      <div style="position:absolute;top:50%;left:20px;transform:translateY(-50%);
-                  background:rgba(0,20,60,.9);border:2px solid #ff0;border-radius:6px;
-                  padding:15px;max-width:280px;pointer-events:auto;cursor:pointer;z-index:65"
-           onclick="showNewsOverlay()">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <h4 style="color:#ff0;text-shadow:0 0 6px #ff0;font-size:14px;
-                     display:flex;align-items:center;gap:8px;margin:0">📢 お知らせ</h4>
-          <span id="newsNewBadge"
-                style="background:#f00;color:#fff;font-size:10px;padding:3px 8px;
-                       border-radius:4px;font-weight:900;display:block">NEW!</span>
+      <div style="position:absolute;top:50%;left:20px;transform:translateY(-50%);background:rgba(0,20,60,.9);border:2px solid #ff0;border-radius:6px;padding:15px;max-width:240px;pointer-events:auto;cursor:pointer;z-index:65" onclick="showNewsOverlay()">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h4 style="color:#ff0;text-shadow:0 0 6px #ff0;font-size:14px;margin:0">📢 お知らせ</h4>
+          <span id="newsNewBadge" style="background:#f00;color:#fff;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:900">NEW!</span>
         </div>
         <div style="color:#aaa;font-size:10px">クリックして詳細を見る</div>
       </div>
-
       <!-- 左下：ゲーム情報 -->
-      <div style="position:absolute;bottom:20px;left:20px;background:rgba(0,20,60,.8);
-                  border:2px solid #a0f;border-radius:6px;padding:15px;
-                  max-width:280px;pointer-events:auto">
-        <h4 style="color:#a0f;margin-bottom:10px;text-shadow:0 0 6px #a0f;font-size:14px">【ゲーム情報】</h4>
-        <button class="home-btn" onclick="showControls()"
-                style="width:100%;padding:8px;font-size:12px;margin-bottom:8px;pointer-events:auto">
-          🎮 操作方法・ルール説明
-        </button>
-        <button class="home-btn" onclick="showTutorialStart()"
-                style="width:100%;padding:8px;font-size:12px;pointer-events:auto">
-          📖 TUTORIAL
-        </button>
+      <div style="position:absolute;bottom:20px;left:20px;background:rgba(0,20,60,.8);border:2px solid #a0f;border-radius:6px;padding:15px;max-width:240px;pointer-events:auto">
+        <h4 style="color:#a0f;margin-bottom:10px;text-shadow:0 0 6px #a0f;font-size:13px">【ゲーム情報】</h4>
+        <button class="home-btn" onclick="showControls()" style="width:100%;padding:8px;font-size:11px;margin-bottom:8px">🎮 操作方法・ルール説明</button>
+        <button class="home-btn" onclick="showTutorialStart()" style="width:100%;padding:8px;font-size:11px">📖 TUTORIAL</button>
       </div>
-
       <!-- 右下ボタン群 -->
-      <div style="position:absolute;bottom:20px;right:20px;pointer-events:auto;
-                  display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+      <div style="position:absolute;bottom:20px;right:20px;pointer-events:auto;display:flex;flex-direction:column;gap:8px;align-items:flex-end">
         <div style="display:flex;gap:8px">
-          <button class="home-btn" onclick="showExchange()"
-                  style="padding:10px 20px;font-size:13px;border-color:#ff0;color:#ff0">
-            💵 ボイドル両替所
-          </button>
-          <button class="home-btn" onclick="showCodeInput()"
-                  style="padding:10px 20px;font-size:13px;border-color:#f0f;color:#f0f">
-            🎁 特別コード
-          </button>
+          <button class="home-btn" onclick="showExchange()" style="padding:8px 14px;font-size:12px;border-color:#ff0;color:#ff0">💵 両替所</button>
+          <button class="home-btn" onclick="showCodeInput()" style="padding:8px 14px;font-size:12px;border-color:#f0f;color:#f0f">🎁 特別コード</button>
         </div>
-        <button class="home-btn" onclick="showShop()" style="padding:12px 30px;font-size:14px">🏪 SHOP</button>
+        <button class="home-btn" onclick="showShop()" style="padding:10px 24px;font-size:13px">🏪 SHOP</button>
       </div>
-
-      <!-- 中央：タイトル＋PLAYボタン -->
-      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-                  text-align:center;width:100%">
-        <div class="home-title" style="margin-bottom:40px">VOID RUNNER</div>
-        <div class="home-subtitle" style="margin-bottom:50px">
+      <!-- 中央：タイトル＋PLAY -->
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:100%;pointer-events:none">
+        <div class="home-title" style="margin-bottom:16px">VOID RUNNER</div>
+        <div class="home-subtitle" style="margin-bottom:28px">
           最高にエキサイティングなエンドレススペースシューティング<br>大勢の敵の攻撃から生き残れ
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
-          <button class="btn" onclick="selectDifficulty()"
-                  style="padding:20px 60px;font-size:20px;pointer-events:auto">▶ PLAY</button>
-          <div style="color:#0ff;font-size:13px;text-shadow:0 0 6px #0ff;
-                      opacity:0.8;pointer-events:auto;cursor:pointer" onclick="selectDifficulty()">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:auto">
+          <button class="btn" onclick="selectDifficulty()" style="padding:18px 56px;font-size:20px">▶ PLAY</button>
+          <div style="color:#0ff;font-size:13px;text-shadow:0 0 6px #0ff;opacity:0.8;cursor:pointer" onclick="selectDifficulty()">
             難易度：<span id="homeDiffLabel" style="font-weight:900;font-size:15px">NORMAL</span>
           </div>
+        </div>
+      </div>
+
+      <!-- 下部中央：キャラ変更ボタン -->
+      <div style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+                  pointer-events:auto;text-align:center">
+        <div id="homeCharDisplay"
+             style="display:inline-flex;align-items:center;gap:12px;
+                    background:rgba(0,20,60,.85);border:2px solid #0ff;border-radius:12px;
+                    padding:10px 24px;cursor:pointer"
+             onclick="showCharSelect('home')">
+          <div style="font-size:32px">⚫</div>
+          <div style="text-align:left">
+            <div style="color:#0ff;font-size:13px;font-weight:900">ボイド</div>
+            <div style="color:#aaa;font-size:10px">LV 1 / CLASS 0</div>
+          </div>
+          <div style="color:#888;font-size:11px;margin-left:4px">▼ キャラ変更</div>
         </div>
       </div>
     </div><!-- homeScreen END -->
@@ -384,38 +265,27 @@
     <!-- ショップ画面 -->
     <div id="shopScreen" class="shop-screen" style="display:none">
       <div class="shop-title">🏪 SHOP</div>
-      <div class="shop-medal-display">
-        <div style="color:#ffd700;font-size:12px;margin-bottom:4px">現在のコイン</div>
-        <div class="shop-medal-amount" id="shopCoinDisplay">🪙 0</div>
-        <div style="color:#c0c0c0;font-size:12px;margin-top:4px">🔘 <span id="shopMedalDisplay">0</span> メダル</div>
-        <div style="color:#ff0;font-size:12px;margin-top:4px">💵 <span id="shopVoidolDisplay">0</span> ボイドル</div>
+
+      <!-- 右上：所持通貨（小さく） -->
+      <div style="position:absolute;top:16px;right:20px;text-align:right;
+                  font-family:Orbitron,monospace;font-size:11px;line-height:1.8">
+        <div style="color:#ffd700">🪙 <span id="shopCoinDisplay">0</span></div>
+        <div style="color:#c0c0c0">🔘 <span id="shopMedalDisplay">0</span></div>
+        <div style="color:#ff0">💵 <span id="shopVoidolDisplay">0</span></div>
       </div>
-      <div class="shop-grid">
-        <div class="shop-item-card">
-          <div class="shop-item-name">❤️ HEAL</div>
-          <div class="shop-item-desc">HP を 50 回復</div>
-          <div class="shop-item-price">50 🪙</div>
-          <button class="shop-buy-btn" onclick="buyShopItem('heal_up')">BUY</button>
-        </div>
-        <div class="shop-item-card">
-          <div class="shop-item-name">❤️ MAX LIFE</div>
-          <div class="shop-item-desc">最大 HP を 20 増加</div>
-          <div class="shop-item-price">100 🪙</div>
-          <button class="shop-buy-btn" onclick="buyShopItem('max_lives')">BUY</button>
-        </div>
-        <div class="shop-item-card">
-          <div class="shop-item-name">⚔️ DAMAGE UP</div>
-          <div class="shop-item-desc">攻撃力を 1 段階向上</div>
-          <div class="shop-item-price">150 🪙</div>
-          <button class="shop-buy-btn" onclick="buyShopItem('damage_up')">BUY</button>
-        </div>
-        <div class="shop-item-card">
-          <div class="shop-item-name">⚡ FIRE RATE</div>
-          <div class="shop-item-desc">射撃速度を 1 段階向上</div>
-          <div class="shop-item-price">150 🪙</div>
-          <button class="shop-buy-btn" onclick="buyShopItem('fire_rate_up')">BUY</button>
-        </div>
+
+      <!-- ガチャ導線 -->
+      <div style="width:100%;max-width:500px;margin-bottom:20px">
+        <button onclick="showGacha()"
+
+                style="width:100%;padding:16px;background:linear-gradient(135deg,#440088,#880044);
+                       border:2px solid #f0f;border-radius:10px;color:#f0f;cursor:pointer;
+                       font-family:Orbitron,monospace;font-size:15px;font-weight:900;
+                       text-shadow:0 0 8px #f0f;box-shadow:0 0 16px rgba(255,0,255,.3)">
+          🎲 ガチャ — キャラを入手しよう！
+        </button>
       </div>
+      <div id="shopItemGrid" class="shop-grid" style="width:100%;max-width:500px"></div>
       <button class="shop-back-btn" onclick="hideShop()">BACK</button>
     </div>
 
@@ -425,23 +295,27 @@
                 background:linear-gradient(135deg,#000510,#001030);z-index:50;
                 display:none;flex-direction:column;align-items:center;
                 padding:30px;overflow-y:auto;pointer-events:auto">
-      <h2 style="color:#0ff;text-shadow:0 0 12px #0ff;font-size:28px;
-                 margin-bottom:20px;margin-top:20px">SELECT DIFFICULTY</h2>
-      <div id="difficultyBtns"
-           style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:24px"></div>
+      <h2 style="color:#0ff;text-shadow:0 0 12px #0ff;font-size:28px;margin-bottom:16px;margin-top:20px">SELECT DIFFICULTY</h2>
+      <!-- キャラ選択ボタン -->
+      <button id="diffCharSelectBtn" onclick="showCharSelect('diff')"
+              style="margin-bottom:20px;padding:10px 24px;background:rgba(0,30,80,.8);
+                     border:2px solid #0ff;border-radius:8px;color:#0ff;cursor:pointer;
+                     font-family:Orbitron,monospace;font-size:13px;font-weight:900">
+        ⚫ ボイド LV1 ▼ キャラ変更
+      </button>
+      <div id="difficultyBtns" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:24px"></div>
       <hr style="border-color:rgba(0,255,255,.2);width:80%;max-width:600px;margin-bottom:20px">
       <div style="width:100%;max-width:620px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <h3 style="color:#ff0;text-shadow:0 0 8px #ff0;font-size:16px">🎁 スタートボーナス（コイン消費）</h3>
-          <div id="bonusCoinDisplay" style="color:#ffd700;font-size:14px;text-shadow:0 0 6px #ffd700">🪙 0</div>
+          <h3 style="color:#ff0;text-shadow:0 0 8px #ff0;font-size:16px">🎁 スタートボーナス</h3>
+          <div id="bonusCoinDisplay" style="color:#ffd700;font-size:14px">🪙 0</div>
         </div>
         <div id="bonusArea" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
       </div>
       <hr style="border-color:rgba(0,255,255,.2);width:80%;max-width:600px;margin:20px 0">
       <div style="display:flex;gap:15px;margin-bottom:30px">
         <button class="btn" onclick="confirmDifficulty()" style="padding:16px 50px;font-size:18px">▶ 決定</button>
-        <button class="btn" onclick="cancelDifficulty()"
-                style="padding:16px 30px;font-size:14px;background:linear-gradient(135deg,#666,#333)">CANCEL</button>
+        <button class="btn" onclick="cancelDifficulty()" style="padding:16px 30px;font-size:14px;background:linear-gradient(135deg,#666,#333)">CANCEL</button>
       </div>
     </div>
 
@@ -449,59 +323,33 @@
     <div id="gameOverScreen"
          style="position:absolute;top:0;left:0;width:100%;height:100%;
                 background:linear-gradient(135deg,#000510,#001030);z-index:70;
-                display:none;flex-direction:column;align-items:center;
-                justify-content:center;pointer-events:auto">
-
-      <!-- 右上プレイヤー情報 -->
-      <div style="position:absolute;top:20px;right:20px;background:rgba(0,20,60,.8);
-                  border:2px solid #0ff;border-radius:4px;padding:15px;font-size:12px;
-                  color:#0ff;text-shadow:0 0 6px #0ff;text-align:right;min-width:200px">
+                display:none;flex-direction:column;align-items:center;justify-content:center;pointer-events:auto">
+      <div style="position:absolute;top:20px;right:20px;background:rgba(0,20,60,.8);border:2px solid #0ff;border-radius:4px;padding:15px;font-size:12px;color:#0ff;text-shadow:0 0 6px #0ff;text-align:right;min-width:200px">
         <div style="font-size:10px;color:rgba(0,255,255,.6);margin-bottom:3px">NICKNAME</div>
         <div style="font-size:14px;font-weight:900;margin-bottom:8px" id="goNickname">PLAYER</div>
         <div class="player-level-bar" style="margin-bottom:8px">
           <div class="player-level-text" id="goLevelText">LV 1</div>
-          <div class="player-exp-bar-outer">
-            <div class="player-exp-bar-inner" id="goExpBar" style="width:0%"></div>
-          </div>
+          <div class="player-exp-bar-outer"><div class="player-exp-bar-inner" id="goExpBar" style="width:0%"></div></div>
         </div>
-        <div style="font-size:13px;font-weight:900;margin-bottom:4px;color:#ffd700">
-          🏆 HS: <span id="goHS">0</span>
-        </div>
+        <div style="font-size:13px;font-weight:900;margin-bottom:4px;color:#ffd700">🏆 HS: <span id="goHS">0</span></div>
         <div style="font-size:12px;color:#ffd700;margin-bottom:4px">🪙 <span id="goCoinCount">0</span></div>
         <div style="font-size:12px;color:#c0c0c0;margin-bottom:4px">🔘 <span id="goMedalCount">0</span></div>
         <div style="font-size:12px;color:#ff0">💵 <span id="goVoidolCount">0</span></div>
       </div>
-
-      <h2 style="font-size:60px;color:#ff4444;text-shadow:0 0 18px #f44;
-                 margin-bottom:20px;opacity:0;transition:opacity 0.5s" id="gameOverTitle">GAME OVER</h2>
-
+      <h2 style="font-size:60px;color:#ff4444;text-shadow:0 0 18px #f44;margin-bottom:20px;opacity:0;transition:opacity 0.5s" id="gameOverTitle">GAME OVER</h2>
       <div style="text-align:center;opacity:0;transition:opacity 0.5s;transition-delay:0.5s" id="finalScore">
-        <div style="font-size:40px;color:#ffd700;text-shadow:0 0 12px #ffd700;margin-bottom:10px"
-             id="totalScore">SCORE: 0</div>
-        <div style="font-size:14px;color:#aaa;margin-bottom:5px">
-          基本スコア: <span style="color:#fff" id="baseScoreText">0</span>
-        </div>
-        <div style="font-size:14px;color:#aaa;margin-bottom:5px">
-          ボーナス倍率: <span style="color:#0ff" id="bonusMultText">×1.0</span>
-        </div>
-        <div style="font-size:14px;color:#aaa;margin-bottom:10px">
-          ボーナス: <span style="color:#ffd700" id="bonusScoreText">+0</span>
-        </div>
+        <div style="font-size:40px;color:#ffd700;text-shadow:0 0 12px #ffd700;margin-bottom:10px" id="totalScore">SCORE: 0</div>
+        <div style="font-size:14px;color:#aaa;margin-bottom:5px">基本スコア: <span style="color:#fff" id="baseScoreText">0</span></div>
+        <div style="font-size:14px;color:#aaa;margin-bottom:5px">倍率: <span style="color:#0ff" id="bonusMultText">×1.0</span></div>
+        <div style="font-size:14px;color:#aaa;margin-bottom:10px">ボーナス: <span style="color:#ffd700" id="bonusScoreText">+0</span></div>
         <div style="font-size:14px;color:#a0f;text-shadow:0 0 6px #a0f" id="expDisplay">獲得EXP: 0</div>
       </div>
-
       <div id="gameOverRanking" style="margin:20px 0;opacity:0;transition:opacity 0.5s;transition-delay:1s">
-        <h3 style="color:#ffd700;font-size:18px;text-shadow:0 0 8px #ffd700;margin-bottom:10px">
-          🏆 TOP 5 RANKING 🏆
-        </h3>
+        <h3 style="color:#ffd700;font-size:18px;text-shadow:0 0 8px #ffd700;margin-bottom:10px">🏆 TOP 5 RANKING 🏆</h3>
         <div id="gameOverRankingList" style="text-align:left"></div>
       </div>
-
-      <p id="finalStats"
-         style="color:rgba(255,255,255,.8);font-size:14px;margin-bottom:30px;
-                text-align:center;opacity:0;transition:opacity 0.5s;transition-delay:1.5s"></p>
-      <div style="display:flex;gap:15px;opacity:0;transition:opacity 0.5s;transition-delay:2s"
-           id="gameOverButtons">
+      <p id="finalStats" style="color:rgba(255,255,255,.8);font-size:14px;margin-bottom:30px;text-align:center;opacity:0;transition:opacity 0.5s;transition-delay:1.5s"></p>
+      <div style="display:flex;gap:15px;opacity:0;transition:opacity 0.5s;transition-delay:2s" id="gameOverButtons">
         <button class="btn" onclick="retryGame()">RETRY</button>
         <button class="btn" onclick="goHome()">HOME</button>
       </div>
@@ -512,127 +360,50 @@
       <div class="news-overlay-box">
         <h3 style="color:#ff0;text-shadow:0 0 12px #ff0">📢 お知らせ</h3>
         <div class="news-overlay-content" id="newsOverlayContent">
-
-          <!-- v1.4.0 NEW -->
           <div class="news-item" style="border-left-color:#0f0">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <div class="news-date">2025-03-14 | v1.4.0</div>
-              <span style="background:#f00;color:#fff;font-size:8px;padding:2px 6px;
-                           border-radius:3px;font-weight:900">NEW!</span>
+              <div class="news-date">2025 | v1.5.0</div>
+              <span style="background:#f00;color:#fff;font-size:8px;padding:2px 6px;border-radius:3px;font-weight:900">NEW!</span>
             </div>
-            <div class="news-title">ボイドル実装・ランキングアップデート</div>
+            <div class="news-title">キャラクター・ガチャシステム実装</div>
             <div class="news-content">
-              以下の新機能を実装しました。<br><br>
-              <strong style="color:#0ff">〈新機能〉</strong><br>
-              ・新通貨「ボイドル（💵）」を追加しました。<br>
-              &nbsp;&nbsp;レベルアップ・ミッション・ランキング報酬・特別コード等で入手できます。<br>
-              ・ボイドル両替所を追加しました。<br>
-              &nbsp;&nbsp;ボイドル⇔コイン・メダルの相互変換が可能です。<br>
-              ・特別コード入力機能を追加しました。<br>
-              ・オンラインランキングを4種類（通算・日別・週別・月別）に拡張しました。<br>
-              &nbsp;&nbsp;週別・月別ランキング上位には報酬が自動付与されます。<br>
-              ・EXP必要量を調整しました（25000→8000）。<br><br>
-              <strong style="color:#0ff">〈表記変更〉</strong><br>
-              ・ゲーム内の表記をムーブ → Move、オーブ → Orb に統一しました。<br>
-              ・ピース絵文字を 💎→🧩 に変更しました。
+              ・9種類のキャラクターを実装しました。<br>
+              ・キャラごとに固有スキル2種類（E/Rキー）があります。<br>
+              ・ノーマルガチャを実装（50,000コイン）。<br>
+              ・キャラレベル・クラスシステムを実装。<br>
+              ・スタートボーナスは近日実装予定です。
             </div>
           </div>
-
-          <!-- v1.3.0 -->
           <div class="news-item" style="border-left-color:#0f0">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <div class="news-date">2025-03-02 | v1.3.0</div>
-           </div>
-        <div class="news-title">新機能とバグ修正</div>
-        <div class="news-content">
-          以下の新機能を実装しました。<br><br>
-          <strong style="color:#0ff">〈新機能〉</strong><br>
-          ・アカウント制を実装しました。<br>
-          アカウント方法は以下の二つです。<br>
-          &nbsp;&nbsp;1. メールアドレス<br>
-          &nbsp;&nbsp;2. Google アカウント<br>
-          英数字記号4桁のID、アカウント名、パスワードを設定してご利用ください。<br>
-          （アカウントがなくてもサービスを利用できます。）<br><br>
-          ・オンラインランキングを実装しました。<br><br>
-          <strong style="color:#0ff">〈バグ修正とその他の変更〉</strong><br>
-          ・システムの不具合を修正。<br>
-          ・プレイ中にエフェクトが左に表示されるようになりました。<br>
-          ・前回選択した難易度が保存されるようになりました。<br>
-          ・ホーム画面にアカウント情報が表示されるようになりました。<br>
-          ・ホーム画面から閲覧できるランキングをオンラインランキングに変更しました。<br>
-          ・敵とボスのステータスを調整しました。<br>
-          ・難易度の調整を行いました。
-        </div>
-      </div>
-
-          <div class="news-item" style="border-left-color:#0f0">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <div class="news-date">2025-02-24 | v1.2.0</div>
-        </div>
-        <div class="news-title">新機能とバグ修正</div>
-        <div class="news-content">
-          以下の新機能を実装しました。<br><br>
-          <strong style="color:#0ff">〈新機能〉</strong><br>
-          ・スタートボーナスを実装しました。<br>
-          ・デイリーミッションを実装しました。<br><br>
-          <strong style="color:#0ff">〈バグ修正とその他の変更〉</strong><br>
-          ・弾が大きくなるとそれに比例してプレイヤーも大きくなってしまう問題を修正。<br>
-          ・難易度により数値の表示が大きくなってしまう問題を修正。<br>
-          ・ホーム画面にも選択中の難易度が表示されるようになりました。<br>
-          ・レベルの上がり具合を調整しました。<br>
-          ・ムーブの上がり具合を調整しました。<br>
-          ・ゲームオーバー後の画面により細かい表示がされるようになりました。<br>
-          ・敵とボスのステータスを調整しました。<br>
-          ・難易度の調整を行いました。
-        </div>
-      </div>
-
-          <div class="news-item">
-            <div class="news-date">2025-02-17 | v1.0.1</div>
-            <div class="news-title">バグ修正と仕様変更</div>
-            <div class="news-content">スキル発動に関するバグを修正。スキル発動可否の視覚的フィードバックを改善。</div>
+            <div class="news-date">2025-03-14 | v1.4.0</div>
+            <div class="news-title">ボイドル・4種ランキング実装</div>
+            <div class="news-content">新通貨ボイドル・4種類のランキング・特別コード入力を追加。</div>
           </div>
-
+          <div class="news-item" style="border-left-color:#0f0">
+            <div class="news-date">2025-03-02 | v1.3.0</div>
+            <div class="news-title">アカウント制・オンラインランキング実装</div>
+            <div class="news-content">アカウント制とオンラインランキングを実装しました。</div>
+          </div>
           <div class="news-item">
             <div class="news-date">2025-02-16 | v1.0.0</div>
             <div class="news-title">ゲームリリース!</div>
-            <div class="news-content">VOID RUNNERがリリースされました！エンドレスな宇宙を駆け抜けよう！</div>
-          </div>
-
-          <div class="news-item">
-            <div class="news-date">2025-02-15 | v0.9.0 (先行体験版)</div>
-            <div class="news-title">チュートリアル追加</div>
-            <div class="news-content">初心者向けのチュートリアルモードを追加しました。</div>
-          </div>
-
-          <div class="news-item">
-            <div class="news-date">2025-02-14 | v0.8.0 (先行体験版)</div>
-            <div class="news-title">ランキング機能実装</div>
-            <div class="news-content">トップ5のハイスコアを記録できます。</div>
+            <div class="news-content">VOID RUNNERがリリースされました！</div>
           </div>
         </div>
-        <button class="btn" onclick="closeNewsOverlay()"
-                style="width:100%;pointer-events:auto;margin-top:15px">CLOSE</button>
+        <button class="btn" onclick="closeNewsOverlay()" style="width:100%;pointer-events:auto;margin-top:15px">CLOSE</button>
       </div>
     </div>
 
     <!-- デイリーミッション -->
-    <div id="dailyOverlay"
-         style="position:absolute;top:0;left:0;width:100%;height:100%;
-                background:rgba(0,0,0,.8);z-index:100;pointer-events:auto;
-                display:none;align-items:center;justify-content:center">
-      <div style="background:rgba(0,20,80,.95);border:3px solid #ff0;
-                  border-radius:8px;padding:30px;max-width:500px;width:90%;
-                  max-height:80vh;overflow-y:auto">
-        <h3 style="color:#ff0;text-shadow:0 0 12px #ff0;font-size:22px;
-                   margin-bottom:20px;text-align:center">📋 デイリーミッション</h3>
+    <div id="dailyOverlay" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:100;pointer-events:auto;display:none;align-items:center;justify-content:center">
+      <div style="background:rgba(0,20,80,.95);border:3px solid #ff0;border-radius:8px;padding:30px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto">
+        <h3 style="color:#ff0;text-shadow:0 0 12px #ff0;font-size:22px;margin-bottom:20px;text-align:center">📋 デイリーミッション</h3>
         <div style="color:#0ff;font-size:12px;margin-bottom:10px">📅 TODAY</div>
         <div id="todayMissionList"></div>
         <hr style="border-color:rgba(255,255,0,.2);margin:20px 0">
         <div style="color:#666;font-size:12px;margin-bottom:10px">📅 YESTERDAY</div>
         <div id="yesterdayMissionList"></div>
-        <button class="btn" onclick="closeDailyMission()"
-                style="width:100%;margin-top:20px;pointer-events:auto">CLOSE</button>
+        <button class="btn" onclick="closeDailyMission()" style="width:100%;margin-top:20px;pointer-events:auto">CLOSE</button>
       </div>
     </div>
 
@@ -640,16 +411,10 @@
     <div id="rankingOverlay" class="ranking-overlay">
       <div class="ranking-box">
         <h3>🏆 HIGH SCORE RANKING 🏆</h3>
-        <!-- タブバー -->
-        <div id="rankingTabBar"
-             style="display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap"></div>
-        <!-- 日別サブタブ（今日/昨日） -->
-        <div id="rankingSubTabBar"
-             style="display:none;gap:6px;margin-bottom:10px"></div>
-        <!-- ランキングリスト -->
+        <div id="rankingTabBar" style="display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap"></div>
+        <div id="rankingSubTabBar" style="display:none;gap:6px;margin-bottom:10px"></div>
         <div class="ranking-list" id="rankingList"></div>
-        <button class="btn" onclick="closeRanking()"
-                style="width:100%;pointer-events:auto;margin-top:12px">CLOSE</button>
+        <button class="btn" onclick="closeRanking()" style="width:100%;pointer-events:auto;margin-top:12px">CLOSE</button>
       </div>
     </div>
 
@@ -658,24 +423,17 @@
       <div class="controls-box">
         <h3>🎮 操作方法・ルール説明</h3>
         <div class="tutorial-step-title">【基本操作】</div>
-        <p>移動: W/A/S/D キーまたは矢印キー<br>射撃: スペースバー またはマウスクリック</p>
-        <div class="tutorial-step-title">【敵について】</div>
-        <p>画面上から降ってくる敵がいます。敵には様々な種類があります：<br>
-          ・通常敵（四角）: 普通の敵<br>・高速敵（三角）: 素早い敵<br>・タンク敵（六角）: HPが多い敵</p>
+        <p>移動: W/A/S/D または矢印キー<br>射撃: スペースバー またはマウスクリック</p>
+        <div class="tutorial-step-title">【キャラスキル】</div>
+        <p>E キー: キャラのスキル1（ピース消費）<br>R キー: キャラのスキル2（ピース消費・CDあり）</p>
         <div class="tutorial-step-title">【コイン・メダル・ピース】</div>
-        <p>敵を倒すとコイン、メダル、ピースが落ちます。<br>
-          ・コイン　　🪙  : ゲーム終了後に保存され、ショップで使用可能<br>
-          ・メダル　　🔘  : ゲーム終了後に保存される（将来的な機能用）<br>
-          ・ボイドル　💵　: ゲーム外のミッション等で獲得可能（将来的な機能用）<br>
-          ・ピース　　🧩  : ゲーム内のスキルに使用（ゲーム終了後リセット）</p>
-        <div class="tutorial-step-title">【アイテム＆スキル】</div>
-        <p>アイテム（1-5キー）: 🛡️ シールド ⚡ ラピッド 💥 ボム 💚 ヒール ❤️ ライフ<br>
-          スキル（C,V,B,Nキー）: ホーミング（100P）ウェーブ（500P）ドロップ（1000P）メガボム（5000P）</p>
-        <div class="tutorial-step-title">【オーブ と ムーブ】</div>
-        <p>オーブを集めるとムーブレベルが上昇し、能力が強化されます。</p>
-        <div class="tutorial-step-title">【プレイヤーレベルとボイドル】</div>
-        <p>プレイ後にEXPを獲得しレベルアップします。レベルアップ時に10ボイドルを獲得。<br>
-          ボイドルはコイン・メダルと相互両替できます。特別コードやランキング報酬でも入手可能です。</p>
+        <p>・コイン🪙: 保存・ガチャ等に使用<br>・メダル🔘: 保存<br>・ピース🧩: ゲーム内スキルに使用（リセット）</p>
+        <div class="tutorial-step-title">【アイテム（1〜5キー）】</div>
+        <p>🛡️シールド / ⚡ラピッド / 💥ボム / 💚ヒール / ❤️ライフ</p>
+        <div class="tutorial-step-title">【Orb と Move】</div>
+        <p>Orbを集めるとMoveレベルが上昇し、能力が強化されます。</p>
+        <div class="tutorial-step-title">【キャラクター】</div>
+        <p>ノーマルガチャ（50,000コイン）でキャラを入手。キャラLVが上がるとスコア倍率アップ（最大×1.5）。</p>
         <button class="btn" onclick="closeControls()" style="width:100%;pointer-events:auto">CLOSE</button>
       </div>
     </div>
@@ -684,89 +442,86 @@
     <div id="tutorialOverlay" class="tutorial-overlay">
       <div class="tutorial-box">
         <h3 id="tutorialPhaseTitle">📖 TUTORIAL</h3>
-        <p id="tutorialPhaseDesc"
-           style="text-align:center;color:#0ff;margin-bottom:15px;font-size:14px"></p>
+        <p id="tutorialPhaseDesc" style="text-align:center;color:#0ff;margin-bottom:15px;font-size:14px"></p>
         <p id="tutorialPhaseMsg" style="text-align:center"></p>
         <div style="color:#ffd700;font-size:16px;font-weight:900;margin-bottom:15px;margin-top:15px">
           敵撃破数: <span id="tutorialKillCount">0</span> / <span id="tutorialKillTarget">20</span>
         </div>
-        <button class="btn" onclick="skipTutorial()"
-                style="width:100%;pointer-events:auto">SKIP TUTORIAL</button>
+        <button class="btn" onclick="skipTutorial()" style="width:100%;pointer-events:auto">SKIP TUTORIAL</button>
+      </div>
+    </div>
+
+    <!-- キャラ選択オーバーレイ -->
+    <div id="charSelectOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:3500;justify-content:center;align-items:center">
+      <div style="background:rgba(0,10,30,.98);border:2px solid #0ff;border-radius:14px;padding:0;width:min(720px,96vw);max-height:90vh;display:flex;flex-direction:column;font-family:Orbitron,monospace;overflow:hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(0,255,255,.2)">
+          <h2 style="color:#0ff;font-size:18px;margin:0;text-shadow:0 0 10px #0ff">👾 キャラクター選択</h2>
+          <button onclick="closeCharSelect()" style="background:transparent;border:1px solid #555;color:#888;padding:6px 14px;border-radius:4px;cursor:pointer;font-size:12px">✕ 閉じる</button>
+        </div>
+        <div style="display:flex;flex:1;overflow:hidden">
+          <div style="flex:1;overflow-y:auto;padding:16px;border-right:1px solid rgba(0,255,255,.15);min-width:0">
+            <div style="color:#aaa;font-size:10px;margin-bottom:10px;text-align:center">所持キャラをタップして選択</div>
+            <div id="charSelectGrid"></div>
+          </div>
+          <div id="charDetailPanel" style="width:260px;flex-shrink:0;overflow-y:auto;padding:16px;background:rgba(0,5,20,.6)">
+            <div style="color:#555;font-size:12px;text-align:center;margin-top:30px">キャラを選択してください</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ガチャオーバーレイ -->
+    <div id="gachaOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:3500;justify-content:center;align-items:center">
+      <div style="background:rgba(0,10,30,.98);border:2px solid #f0f;border-radius:14px;padding:24px;width:min(500px,94vw);max-height:90vh;overflow-y:auto;font-family:Orbitron,monospace">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <h2 style="color:#f0f;font-size:20px;margin:0;text-shadow:0 0 12px #f0f">🎲 ガチャ</h2>
+          <button onclick="closeGacha()" style="background:transparent;border:1px solid #555;color:#888;padding:6px 14px;border-radius:4px;cursor:pointer;font-size:12px">✕ 閉じる</button>
+        </div>
+        <div id="gachaContent"></div>
+      </div>
+    </div>
+
+    <!-- ガチャ結果 -->
+    <div id="gachaResultOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:4000;justify-content:center;align-items:center">
+      <div style="background:rgba(0,10,40,.98);border:3px solid #0ff;border-radius:16px;padding:32px;width:min(380px,90vw);font-family:Orbitron,monospace;box-shadow:0 0 40px rgba(0,255,255,.4);text-align:center">
+        <div style="color:#0ff;font-size:14px;font-weight:900;margin-bottom:16px;text-shadow:0 0 8px #0ff;letter-spacing:2px">✨ GACHA RESULT ✨</div>
+        <div id="gachaResultContent"></div>
+        <button onclick="closeGachaResult()" style="width:100%;margin-top:20px;padding:14px;background:linear-gradient(135deg,#0ff,#0af);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:900;font-size:15px;font-family:Orbitron,monospace">OK</button>
       </div>
     </div>
 
     <!-- ボイドル両替所 -->
-    <div id="exchangeOverlay"
-         style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);
-                z-index:3000;justify-content:center;align-items:center">
-      <div style="background:rgba(0,10,30,.98);border:2px solid #0ff;border-radius:12px;
-                  padding:24px;width:min(480px,95vw);max-height:85vh;overflow-y:auto;
-                  font-family:Orbitron,monospace">
+    <div id="exchangeOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;justify-content:center;align-items:center">
+      <div style="background:rgba(0,10,30,.98);border:2px solid #0ff;border-radius:12px;padding:24px;width:min(480px,95vw);max-height:85vh;overflow-y:auto;font-family:Orbitron,monospace">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <h2 style="color:#0ff;font-size:18px;margin:0;text-shadow:0 0 10px #0ff">
-            💵 ボイドル両替所
-          </h2>
-          <button onclick="closeExchange()"
-                  style="background:transparent;border:1px solid #555;color:#888;
-                         padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px">
-            ✕ 閉じる
-          </button>
+          <h2 style="color:#0ff;font-size:18px;margin:0;text-shadow:0 0 10px #0ff">💵 ボイドル両替所</h2>
+          <button onclick="closeExchange()" style="background:transparent;border:1px solid #555;color:#888;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px">✕ 閉じる</button>
         </div>
         <div id="exchangeContent"></div>
       </div>
     </div>
 
     <!-- 特別コード入力 -->
-    <div id="codeInputOverlay"
-         style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);
-                z-index:3000;justify-content:center;align-items:center">
-      <div style="background:rgba(0,10,30,.98);border:2px solid #ff0;border-radius:12px;
-                  padding:28px;width:min(400px,90vw);font-family:Orbitron,monospace;
-                  text-align:center">
-        <h2 style="color:#ff0;font-size:16px;margin:0 0 18px;text-shadow:0 0 10px #ff0">
-          🎁 特別コード入力
-        </h2>
+    <div id="codeInputOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:3000;justify-content:center;align-items:center">
+      <div style="background:rgba(0,10,30,.98);border:2px solid #ff0;border-radius:12px;padding:28px;width:min(400px,90vw);font-family:Orbitron,monospace;text-align:center">
+        <h2 style="color:#ff0;font-size:16px;margin:0 0 18px;text-shadow:0 0 10px #ff0">🎁 特別コード入力</h2>
         <input id="codeInputField" type="text" placeholder="コードを入力..."
-               style="width:100%;background:rgba(0,30,60,.8);border:2px solid #0ff;
-                      border-radius:6px;padding:12px;color:#fff;font-size:14px;
-                      font-family:Orbitron,monospace;box-sizing:border-box;
-                      margin-bottom:12px;text-align:center;text-transform:uppercase"
+               style="width:100%;background:rgba(0,30,60,.8);border:2px solid #0ff;border-radius:6px;padding:12px;color:#fff;font-size:14px;font-family:Orbitron,monospace;box-sizing:border-box;margin-bottom:12px;text-align:center;text-transform:uppercase"
                oninput="this.value=this.value.toUpperCase()">
-        <div id="codeInputResult"
-             style="min-height:20px;font-size:13px;margin-bottom:14px"></div>
+        <div id="codeInputResult" style="min-height:20px;font-size:13px;margin-bottom:14px"></div>
         <div style="display:flex;gap:10px;justify-content:center">
-          <button onclick="submitCode()"
-                  style="background:linear-gradient(135deg,#ff0,#f80);color:#000;border:none;
-                         padding:12px 28px;border-radius:6px;cursor:pointer;
-                         font-weight:900;font-size:14px">確認する</button>
-          <button onclick="closeCodeInput()"
-                  style="background:transparent;border:1px solid #555;color:#888;
-                         padding:12px 20px;border-radius:6px;cursor:pointer;font-size:12px">
-            閉じる
-          </button>
+          <button onclick="submitCode()" style="background:linear-gradient(135deg,#ff0,#f80);color:#000;border:none;padding:12px 28px;border-radius:6px;cursor:pointer;font-weight:900;font-size:14px">確認する</button>
+          <button onclick="closeCodeInput()" style="background:transparent;border:1px solid #555;color:#888;padding:12px 20px;border-radius:6px;cursor:pointer;font-size:12px">閉じる</button>
         </div>
       </div>
     </div>
 
-    <!-- ランキング報酬ポップアップ -->
-    <div id="rankingRewardOverlay"
-         style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);
-                z-index:4000;justify-content:center;align-items:center">
-      <div style="background:rgba(0,10,30,.98);border:3px solid #ffd700;border-radius:12px;
-                  padding:28px;width:min(420px,92vw);max-height:85vh;overflow-y:auto;
-                  font-family:Orbitron,monospace;text-align:center;
-                  box-shadow:0 0 30px rgba(255,215,0,.5)">
-        <div style="color:#ffd700;font-size:20px;font-weight:900;margin-bottom:20px;
-                    text-shadow:0 0 15px #ffd700">
-          🏆 ランキング結果発表！
-        </div>
+    <!-- ランキング報酬 -->
+    <div id="rankingRewardOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:4000;justify-content:center;align-items:center">
+      <div style="background:rgba(0,10,30,.98);border:3px solid #ffd700;border-radius:12px;padding:28px;width:min(420px,92vw);max-height:85vh;overflow-y:auto;font-family:Orbitron,monospace;text-align:center;box-shadow:0 0 30px rgba(255,215,0,.5)">
+        <div style="color:#ffd700;font-size:20px;font-weight:900;margin-bottom:20px;text-shadow:0 0 15px #ffd700">🏆 ランキング結果発表！</div>
         <div id="rankingRewardContent"></div>
-        <button onclick="closeRankingRewardOverlay()"
-                style="background:linear-gradient(135deg,#ffd700,#f80);color:#000;border:none;
-                       padding:14px 40px;border-radius:8px;margin-top:16px;cursor:pointer;
-                       font-weight:900;font-size:15px;font-family:Orbitron,monospace">
-          閉じる
-        </button>
+        <button onclick="closeRankingRewardOverlay()" style="background:linear-gradient(135deg,#ffd700,#f80);color:#000;border:none;padding:14px 40px;border-radius:8px;margin-top:16px;cursor:pointer;font-weight:900;font-size:15px;font-family:Orbitron,monospace">閉じる</button>
       </div>
     </div>
 
@@ -774,10 +529,11 @@
 
   <!-- 外部JS（読み込み順を厳守） -->
   <script src="player-data.js"></script>
-  <script src="firebase.js"></script>
   <script src="daily.js"></script>
+  <script src="characters.js"></script>
   <script src="skills.js"></script>
   <script src="ui.js"></script>
   <script src="game.js"></script>
+  <script src="firebase.js"></script>
 </body>
 </html>
